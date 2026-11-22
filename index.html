@@ -15,8 +15,8 @@
 <!-- ===== The ship scene ===== -->
 <div id="scene" class="scene">
   <div class="stage">
-    <svg class="world" viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
-      <defs>
+    <div class="plx" data-depth="10">
+      <svg class="world" viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><defs>
         <radialGradient id="lampGlow"><stop offset="0" stop-color="#ffd56b" stop-opacity=".95"/><stop offset=".35" stop-color="#ffb63b" stop-opacity=".45"/><stop offset="1" stop-color="#ffb63b" stop-opacity="0"/></radialGradient>
         <radialGradient id="moonGlow"><stop offset="0" stop-color="#fff6d8" stop-opacity=".7"/><stop offset="1" stop-color="#fff6d8" stop-opacity="0"/></radialGradient>
         <linearGradient id="seaGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0" class="sea-top"/><stop offset="1" class="sea-bot"/></linearGradient>
@@ -24,9 +24,6 @@
           <rect width="120" height="40" class="plank"/><path d="M0 40 H120 M60 0 V20 M0 20 H120 M20 20 V40 M100 20 V40" stroke="#1b120c" stroke-width="3" opacity=".55"/>
         </pattern>
       </defs>
-
-      <!-- moon / sun -->
-      <g class="layer far">
         <circle cx="1330" cy="150" r="170" fill="url(#moonGlow)" class="moonglow"/>
         <g class="moon"><circle cx="1330" cy="150" r="62" fill="#fff3cc" stroke="#1b120c" stroke-width="6"/>
           <circle cx="1305" cy="135" r="12" fill="#ecd9a0"/><circle cx="1352" cy="172" r="8" fill="#ecd9a0"/><circle cx="1350" cy="125" r="6" fill="#ecd9a0"/></g>
@@ -36,20 +33,18 @@
         <rect x="300" y="440" width="22" height="80" fill="#f4f1e8" stroke="#1b120c" stroke-width="5"/>
         <path d="M296 440 L311 418 L326 440Z" fill="#b23a2e" stroke="#1b120c" stroke-width="5" stroke-linejoin="round"/>
         <path class="beam" d="M311 432 L-40 380 L-40 480Z" fill="#fff2a8" opacity=".25"/>
-        <!-- clouds -->
-        <g class="cloud c1"><path d="M200 170 q30 -40 70 -10 q30 -30 60 5 q40 0 30 30 h-170 q-20 -20 10 -25z" class="cloudfill" stroke="#1b120c" stroke-width="5" stroke-linejoin="round"/></g>
-        <g class="cloud c2"><path d="M820 110 q30 -36 66 -8 q26 -26 54 4 q36 0 28 26 h-158 q-18 -18 10 -22z" class="cloudfill" stroke="#1b120c" stroke-width="5" stroke-linejoin="round"/></g>
-      </g>
-
-      <!-- far sea -->
-      <g class="layer mid">
+      </svg>
+      <svg class="cloud c1" viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><path d="M200 170 q30 -40 70 -10 q30 -30 60 5 q40 0 30 30 h-170 q-20 -20 10 -25z" class="cloudfill" stroke="#1b120c" stroke-width="5" stroke-linejoin="round"/></svg><svg class="cloud c2" viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><path d="M820 110 q30 -36 66 -8 q26 -26 54 4 q36 0 28 26 h-158 q-18 -18 10 -22z" class="cloudfill" stroke="#1b120c" stroke-width="5" stroke-linejoin="round"/></svg>
+    </div>
+    <div class="plx" data-depth="18">
+      <svg class="world" viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
         <rect x="-100" y="540" width="1800" height="400" fill="url(#seaGrad)"/>
-        <g class="swell s1"><path d="M-200 590 q50 -16 100 0 t100 0 t100 0 t100 0 t100 0 t100 0 t100 0 t100 0 t100 0 t100 0 t100 0 t100 0 t100 0 t100 0 t100 0 t100 0 t100 0 t100 0 t100 0 t100 0 t100 0" fill="none" stroke="#cfe8f3" stroke-width="4" opacity=".35" stroke-linecap="round"/></g>
-        <g class="swell s2"><path d="M-200 630 q60 -18 120 0 t120 0 t120 0 t120 0 t120 0 t120 0 t120 0 t120 0 t120 0 t120 0 t120 0 t120 0 t120 0 t120 0 t120 0 t120 0" fill="none" stroke="#cfe8f3" stroke-width="4" opacity=".25" stroke-linecap="round"/></g>
-      </g>
-
-      <!-- ===== Ship ===== -->
-      <g class="layer near ship-rock">
+      </svg>
+      <div class="swells"><div class="strip sw1"><svg viewBox="0 0 3200 140" preserveAspectRatio="none" aria-hidden="true"><path d="M0 60 q50 -16 100 0 t100 0 t100 0 t100 0 t100 0 t100 0 t100 0 t100 0 t100 0 t100 0 t100 0 t100 0 t100 0 t100 0 t100 0 t100 0 t100 0 t100 0 t100 0 t100 0 t100 0 t100 0 t100 0 t100 0 t100 0 t100 0 t100 0 t100 0 t100 0 t100 0 t100 0 t100 0" fill="none" stroke="#cfe8f3" stroke-width="4" stroke-linecap="round" opacity=".35"/></svg></div><div class="strip sw2"><svg viewBox="0 0 3200 140" preserveAspectRatio="none" aria-hidden="true"><path d="M0 80 q80 -18 160 0 t160 0 t160 0 t160 0 t160 0 t160 0 t160 0 t160 0 t160 0 t160 0 t160 0 t160 0 t160 0 t160 0 t160 0 t160 0 t160 0 t160 0 t160 0 t160 0" fill="none" stroke="#cfe8f3" stroke-width="4" stroke-linecap="round" opacity=".25"/></svg></div></div>
+    </div>
+    <div class="plx" data-depth="28">
+      <div class="rock">
+        <svg class="world" viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
         <!-- mast & sails -->
         <rect x="785" y="18" width="30" height="662" fill="#7a4b22" stroke="#1b120c" stroke-width="6"/>
         <rect x="700" y="110" width="200" height="16" rx="6" fill="#7a4b22" stroke="#1b120c" stroke-width="5"/>
@@ -149,17 +144,9 @@
         <path d="M70 712 H1530" stroke="#e0a526" stroke-width="8"/>
         <g fill="#2a1a10" stroke="#1b120c" stroke-width="5"><circle cx="300" cy="760" r="16"/><circle cx="560" cy="760" r="16"/><circle cx="1040" cy="760" r="16"/><circle cx="1300" cy="760" r="16"/></g>
         <text x="800" y="800" text-anchor="middle" class="shipname">THE CLOUD CHASER</text>
-      </g>
-
-      <!-- near waves over the hull -->
-      <g class="layer front">
-        <g class="wave-front wf1"><path d="M-300 850 q60 -30 120 0 t120 0 t120 0 t120 0 t120 0 t120 0 t120 0 t120 0 t120 0 t120 0 t120 0 t120 0 t120 0 t120 0 t120 0 t120 0 t120 0 t120 0 V950 H-300Z" class="wavefill1" stroke="#1b120c" stroke-width="6" stroke-linejoin="round"/></g>
-        <g class="wave-front wf2"><path d="M-300 880 q75 -28 150 0 t150 0 t150 0 t150 0 t150 0 t150 0 t150 0 t150 0 t150 0 t150 0 t150 0 t150 0 t150 0 t150 0 V950 H-300Z" class="wavefill2" stroke="#1b120c" stroke-width="6" stroke-linejoin="round"/></g>
-      </g>
-    </svg>
-
-    <!-- ===== Crew (pixel sprites) & clickable spots ===== -->
-    <div class="crew ship-rock">
+      </svg>
+        <!-- ===== Crew (pixel sprites) & clickable spots ===== -->
+    <div class="crew">
       <div class="hot mate" style="left:24%;top:52%;height:18.5%" data-open="quiz" data-title="Sparks' Practice Quiz" tabindex="0" role="button" aria-label="Sparks the gunner: practice quiz">
         <canvas class="sprite" data-sprite="sparks"></canvas>
         <span class="bubble">Ten questions. Hit 'em and we fire gold!</span><span class="name">Sparks · Quiz</span>
@@ -179,6 +166,11 @@
       <div class="hot thing" style="left:43%;top:71.5%;width:14%;height:6%" data-open="settings" data-title="Cargo Hold" tabindex="0" role="button" aria-label="Cargo hatch: back up or load progress">
         <span class="bubble">Cargo hold: back up or load your progress</span><span class="name">Cargo</span>
       </div>
+      </div>
+      </div>
+    </div>
+    <div class="plx front" data-depth="44">
+      <div class="strip wf1"><svg viewBox="0 0 3200 140" preserveAspectRatio="none" aria-hidden="true"><path d="M0 70 q80 -30 160 0 t160 0 t160 0 t160 0 t160 0 t160 0 t160 0 t160 0 t160 0 t160 0 t160 0 t160 0 t160 0 t160 0 t160 0 t160 0 t160 0 t160 0 t160 0 t160 0 V140 H0Z" class="wavefill1" stroke="#1b120c" stroke-width="6" stroke-linejoin="round"/></svg></div><div class="strip wf2"><svg viewBox="0 0 3200 140" preserveAspectRatio="none" aria-hidden="true"><path d="M0 90 q100 -28 200 0 t200 0 t200 0 t200 0 t200 0 t200 0 t200 0 t200 0 t200 0 t200 0 t200 0 t200 0 t200 0 t200 0 t200 0 t200 0 V140 H0Z" class="wavefill2" stroke="#1b120c" stroke-width="6" stroke-linejoin="round"/></svg></div>
     </div>
   </div>
 </div>

@@ -2,6 +2,21 @@
 
 Plans and changes, newest first. One entry per work session.
 
+## 2026-11-22: Performance pass (smoother scene)
+
+**Planned:** The scene felt laggy. Find what was redrawing every frame and move it to the GPU.
+
+**Changed:**
+- Split the one big SVG into separate layers (sky, sea, ship + crew, front waves). Rocking and mouse parallax now move whole layers with CSS transforms instead of redrawing the picture every frame
+- Parallax runs in a single requestAnimationFrame loop with easing, and stops when the mouse stops
+- Waves are seamless sliding strips; clouds drift as their own layers
+- Sprite outlines are baked into the canvas instead of five stacked CSS drop-shadow filters per sprite
+- Removed live backdrop blur behind the dock and panel; fewer stars and no glow on them
+- The intro zoom only scales (no animated clip-path)
+- The scene pauses while a study panel is open
+
+**Next:** Week 3: AI question generator on Lambda.
+
 ## 2026-11-21 (late): Immersive ship scene
 
 **Planned:** Turn the app into an immersive, explorable scene (inspired by woolab.art) instead of a page of tabs.

@@ -114,20 +114,28 @@
     }
   };
 
+  // Draws the sprite with a 1px dark outline baked in (no CSS filters needed, so it stays smooth).
   function drawSprite(canvas, sprite, blink, phase) {
     phase = phase || 0;
     const ctx = canvas.getContext("2d");
     const rows = sprite.rows;
     const w = rows[0].length, h = rows.length;
-    canvas.width = w;
-    canvas.height = h;
-    ctx.clearRect(0, 0, w, h);
+    if (canvas.width !== w + 2) { canvas.width = w + 2; canvas.height = h + 2; }
+    ctx.clearRect(0, 0, w + 2, h + 2);
+    const filled = (x, y) => y >= 0 && y < h && x >= 0 && x < w && rows[y][x] !== ".";
+    ctx.fillStyle = "#1b120c";
+    for (let y = -1; y <= h; y++) {
+      for (let x = -1; x <= w; x++) {
+        if (filled(x, y)) continue;
+        if (filled(x - 1, y) || filled(x + 1, y) || filled(x, y - 1) || filled(x, y + 1)) ctx.fillRect(x + 1, y + 1, 1, 1);
+      }
+    }
     rows.forEach((row, y) => {
       [...row].forEach((ch, x) => {
         if (ch === ".") return;
         let col = sprite.pal[ch];
-        // blinking: eyes and eye-shine become skin, except the bottom eye row becomes a lash line
-        if (blink && (ch === "E" || ch === "W" && rows[y].includes("E"))) {
+        // blinking: the top eye row closes to skin, the bottom row becomes a lash line
+        if (blink && (ch === "E" || (ch === "W" && rows[y].includes("E")))) {
           const below = rows[y + 1] && rows[y + 1][x] === "E";
           col = below ? sprite.pal.S : "#1b120c";
         }
@@ -135,7 +143,7 @@
         if (sprite.glint && ch === "Q" && (x + y + phase) % 3 !== 0) col = sprite.pal.L;
         if (!col) return;
         ctx.fillStyle = col;
-        ctx.fillRect(x, y, 1, 1);
+        ctx.fillRect(x + 1, y + 1, 1, 1);
       });
     });
   }
@@ -255,13 +263,25 @@
     $("soundBtn").setAttribute("aria-label", sound.on ? "Sound off" : "Sound on");
   });
 
-  // ---------- Gentle parallax: the scene leans with the mouse ----------
-  const scene = $("scene");
-  window.addEventListener("mousemove", (e) => {
-    if (document.body.classList.contains("panel-open")) return;
-    const x = (e.clientX / window.innerWidth - 0.5) * 2;
-    const y = (e.clientY / window.innerHeight - 0.5) * 2;
-    scene.style.setProperty("--px", x.toFixed(3));
-    scene.style.setProperty("--py", y.toFixed(3));
-  });
+  // ---------- Gentle parallax: layers ease toward the mouse in one animation loop ----------
+  const layers = [...document.querySelectorAll(".plx")].map((el) => ({ el, depth: Number(el.dataset.depth) || 0 }));
+  let tx = 0, ty = 0, cx = 0, cy = 0, running = false;
+  const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  function tick() {
+    cx += (tx - cx) * 0.08;
+    cy += (ty - cy) * 0.08;
+    layers.forEach(({ el, depth }) => {
+      el.style.transform = `translate3d(${(-cx * depth).toFixed(2)}px, ${(-cy * depth * 0.35).toFixed(2)}px, 0)`;
+    });
+    if (Math.abs(tx - cx) > 0.001 || Math.abs(ty - cy) > 0.001) requestAnimationFrame(tick);
+    else running = false;
+  }
+  if (!reduce) {
+    window.addEventListener("mousemove", (e) => {
+      if (document.body.classList.contains("panel-open")) return;
+      tx = e.clientX / window.innerWidth - 0.5;
+      ty = e.clientY / window.innerHeight - 0.5;
+      if (!running) { running = true; requestAnimationFrame(tick); }
+    }, { passive: true });
+  }
 })();

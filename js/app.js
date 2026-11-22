@@ -352,7 +352,7 @@ $("resetBtn").addEventListener("click", () => {
 // ---------- Night sky ----------
 (function makeSky() {
   const sky = $("sky");
-  for (let i = 0; i < 70; i++) {
+  for (let i = 0; i < 45; i++) {
     const st = document.createElement("i");
     st.style.left = Math.random() * 100 + "%";
     st.style.top = Math.random() * 70 + "%";
