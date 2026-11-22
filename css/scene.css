@@ -1,0 +1,140 @@
+/* ===== Immersive ship scene ===== */
+body{padding-bottom:0;overflow:hidden;height:100vh}
+body.panel-open{overflow:hidden}
+
+/* theme colours for night/day */
+:root{--sky1:#07142a;--sky2:#14365a;--seaTop:#1a4f78;--seaBot:#0b2236;--plank:#9a6a3a;--island:#22404f;--cloud:#2c4562;--wave1:#1e5f86;--wave2:#0f3a5a}
+body.day{--sky1:#7cc4ef;--sky2:#d8f0ff;--seaTop:#3aa0d0;--seaBot:#1d6f9c;--plank:#c08a52;--island:#5c9a5a;--cloud:#ffffff;--wave1:#4fb3df;--wave2:#2a86b8}
+body{background:linear-gradient(180deg,var(--sky1),var(--sky2)) fixed;transition:background 1s}
+body.day .sky,body.day .moon,body.day .moonglow,body.day .beam{opacity:0}
+body:not(.day) .sun{opacity:0}
+body.day .lantern .glow{opacity:.15}
+.sky,.moon,.sun,.moonglow,.beam,.lantern .glow{transition:opacity 1s}
+
+.scene{position:fixed;inset:0;display:grid;place-items:center;z-index:1}
+.stage{position:relative;width:max(100vw,177.78vh);height:max(56.25vw,100vh);
+  transform-origin:50% 50%;transition:transform 1.6s cubic-bezier(.6,.05,.2,1),clip-path 1.6s cubic-bezier(.6,.05,.2,1)}
+.world{position:absolute;inset:0;width:100%;height:100%}
+.sea-top{stop-color:var(--seaTop)}.sea-bot{stop-color:var(--seaBot)}
+.plank{fill:var(--plank)}.island{fill:var(--island)}.cloudfill{fill:var(--cloud)}
+.wavefill1{fill:var(--wave1)}.wavefill2{fill:var(--wave2)}
+.shipname{font-family:"Pirata One",serif;font-size:46px;fill:#e0a526;stroke:#1b120c;stroke-width:2;letter-spacing:6px}
+
+/* parallax layers */
+.layer{transition:transform .6s ease-out}
+.far{transform:translate(calc(var(--px,0) * -10px),calc(var(--py,0) * -6px))}
+.mid{transform:translate(calc(var(--px,0) * -18px),calc(var(--py,0) * -8px))}
+.near,.crew{transform:translate(calc(var(--px,0) * -28px),calc(var(--py,0) * -10px))}
+.front{transform:translate(calc(var(--px,0) * -44px),calc(var(--py,0) * -12px))}
+
+/* ship rocking (applied to SVG ship group + crew layer together) */
+.ship-rock{animation:rock 6s ease-in-out infinite;transform-origin:50% 85%;transform-box:view-box}
+.crew.ship-rock{transform-box:border-box}
+@keyframes rock{0%,100%{rotate:-1.1deg;translate:0 0}50%{rotate:1.1deg;translate:0 -6px}}
+
+/* living details */
+.swell.s1{animation:drift 9s linear infinite}.swell.s2{animation:drift 14s linear infinite reverse}
+.wf1{animation:drift 7s linear infinite}.wf2{animation:drift 10s linear infinite reverse}
+@keyframes drift{from{transform:translateX(0)}to{transform:translateX(-240px)}}
+.wf2{animation-name:drift2}@keyframes drift2{from{transform:translateX(0)}to{transform:translateX(-300px)}}
+.cloud.c1{animation:cloud 60s linear infinite}.cloud.c2{animation:cloud 85s linear infinite;animation-delay:-30s}
+@keyframes cloud{from{transform:translateX(-400px)}to{transform:translateX(1900px)}}
+.lantern .glow{animation:flicker 2.4s ease-in-out infinite;transform-box:fill-box;transform-origin:center}
+.lantern.l2 .glow{animation-delay:-.8s}.lantern.l3 .glow{animation-delay:-1.6s}
+@keyframes flicker{0%,100%{opacity:.85;transform:scale(1)}40%{opacity:.65;transform:scale(.94)}60%{opacity:1;transform:scale(1.05)}}
+.wheel .spin{animation:helm 8s ease-in-out infinite}
+@keyframes helm{0%,100%{rotate:-18deg}50%{rotate:18deg}}
+.steam path{animation:steam 2.6s ease-out infinite;opacity:0}.steam path:last-child{animation-delay:1.3s}
+@keyframes steam{0%{opacity:0;transform:translateY(10px)}30%{opacity:.8}100%{opacity:0;transform:translateY(-30px)}}
+.beam{transform-origin:311px 432px;animation:beam 7s ease-in-out infinite}
+@keyframes beam{0%,100%{transform:rotate(-6deg)}50%{transform:rotate(6deg)}}
+.moon{animation:moonbob 10s ease-in-out infinite}@keyframes moonbob{50%{transform:translateY(-8px)}}
+.cards rect{animation:cardpeek 4s ease-in-out infinite;transform-box:fill-box;transform-origin:center bottom}
+.cards rect:last-child{animation-delay:-2s}
+@keyframes cardpeek{0%,100%{translate:0 0}50%{translate:0 -6px}}
+
+/* ===== Crew & hotspots ===== */
+.crew{position:absolute;inset:0}
+.hot{position:absolute;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;cursor:pointer;outline:none}
+.hot.mate{transform:translateX(-50%)}
+.sprite{height:100%;image-rendering:pixelated;image-rendering:crisp-edges;
+  filter:drop-shadow(3px 0 0 #1b120c) drop-shadow(-3px 0 0 #1b120c) drop-shadow(0 3px 0 #1b120c) drop-shadow(0 -3px 0 #1b120c) drop-shadow(0 10px 8px rgba(0,0,0,.35));
+  animation:idle 1.8s steps(2) infinite;transform-origin:50% 100%;transition:filter .25s}
+.hot:nth-child(2) .sprite{animation-delay:-.4s}.hot:nth-child(3) .sprite{animation-delay:-.9s}.hot:nth-child(4) .sprite{animation-delay:-1.3s}
+@keyframes idle{0%{transform:translateY(0) scaleY(1)}50%{transform:translateY(-2%) scaleY(1.02)}}
+.hot:hover .sprite,.hot:focus-visible .sprite{animation:hop .5s ease-out infinite alternate;
+  filter:drop-shadow(3px 0 0 #1b120c) drop-shadow(-3px 0 0 #1b120c) drop-shadow(0 3px 0 #1b120c) drop-shadow(0 -3px 0 #1b120c) drop-shadow(0 0 18px rgba(255,213,107,.95))}
+@keyframes hop{from{transform:translateY(0)}to{transform:translateY(-7%)}}
+.hot.thing{border-radius:10px}
+.hot.thing:hover,.hot.thing:focus-visible{box-shadow:0 0 0 3px rgba(255,213,107,.9),0 0 30px rgba(255,213,107,.8)}
+.bubble{position:absolute;bottom:calc(100% + 10px);left:50%;transform:translate(-50%,8px) scale(.9);opacity:0;pointer-events:none;
+  width:max-content;max-width:240px;background:#fff8e6;color:#1b120c;border:4px solid #1b120c;border-radius:16px;padding:8px 12px;
+  font:600 14px/1.3 "Inter",sans-serif;transition:.25s cubic-bezier(.3,1.6,.5,1);box-shadow:4px 4px 0 #1b120c}
+.bubble::after{content:"";position:absolute;left:50%;top:100%;border:10px solid transparent;border-top-color:#1b120c;transform:translateX(-50%)}
+.hot:hover .bubble,.hot:focus-visible .bubble{opacity:1;transform:translate(-50%,0) scale(1)}
+.name{position:absolute;top:calc(100% + 6px);white-space:nowrap;font:400 18px "Pirata One",serif;letter-spacing:.5px;color:#ffd56b;
+  background:rgba(11,20,36,.75);border:2px solid #a97b45;border-radius:999px;padding:1px 12px;opacity:.85;transition:.2s}
+.hot.thing .name{top:auto;bottom:calc(100% + 4px)}
+.hot.thing .bubble{bottom:calc(100% + 40px)}
+.hot:hover .name{opacity:1;color:#fff3c4;box-shadow:0 0 14px rgba(255,213,107,.6)}
+.captain .name{border-color:#e8c45c}
+
+/* ===== HUD ===== */
+.hud{position:fixed;top:0;left:0;right:0;z-index:5;display:flex;justify-content:space-between;align-items:center;padding:14px 22px;pointer-events:none}
+.hud>*{pointer-events:auto}
+.logo{font:400 30px "Pirata One",serif;color:#fff3c4;text-shadow:3px 3px 0 #1b120c;letter-spacing:1px}
+.logo span{color:#e8c45c}
+.hud-right{display:flex;gap:10px;align-items:center}
+.hint-pill{font:600 13px "Inter",sans-serif;color:#1b120c;background:#fff8e6;border:3px solid #1b120c;border-radius:999px;padding:4px 12px;box-shadow:3px 3px 0 #1b120c;animation:nudge 2.4s ease-in-out infinite}
+@keyframes nudge{50%{transform:translateY(-3px)}}
+button.icon{width:44px;height:44px;padding:0;border-radius:50%;font-size:20px;background:#fff8e6;color:#1b120c;border:3px solid #1b120c;box-shadow:3px 3px 0 #1b120c}
+.dock{position:fixed;left:50%;bottom:16px;transform:translateX(-50%);z-index:5;display:flex;gap:8px;flex-wrap:wrap;justify-content:center;
+  background:rgba(11,20,36,.7);backdrop-filter:blur(6px);border:3px solid #a97b45;border-radius:16px;padding:8px}
+.dock button{font:400 18px "Pirata One",serif;padding:6px 14px}
+
+/* ===== Intro (spyglass) ===== */
+body:not(.aboard) .stage{transform:scale(.42);clip-path:circle(17% at 50% 50%)}
+body.aboard .stage{transform:scale(1);clip-path:circle(150% at 50% 50%)}
+body:not(.aboard) .hud,body:not(.aboard) .dock,body:not(.aboard) .crew .name{opacity:0}
+.hud,.dock{transition:opacity .8s .9s}
+.intro{position:fixed;inset:0;z-index:20;display:grid;place-items:center;
+  background:radial-gradient(circle at 50% 50%,transparent 23vmin,rgba(4,8,16,.92) 23.5vmin);transition:opacity 1.2s .3s,background-size 1.4s}
+.spyglass-ring{position:absolute;left:50%;top:50%;width:47vmin;height:47vmin;transform:translate(-50%,-50%);border-radius:50%;
+  border:14px solid #a97b45;box-shadow:0 0 0 6px #1b120c,inset 0 0 0 6px #1b120c,0 0 60px rgba(255,213,107,.35);transition:transform 1.4s cubic-bezier(.6,.05,.2,1),opacity 1s}
+.intro-copy{position:absolute;bottom:7vh;left:0;right:0;text-align:center}
+.intro h1{font-size:clamp(2.4rem,6vw,4.6rem);margin:4px 0 14px}
+.kicker{font-family:"IM Fell English",serif;font-style:italic;color:#cfe8f3;margin:0}
+.kicker.small{font-size:.85rem;opacity:.7;margin-top:10px}
+.setsail{font:400 26px "Pirata One",serif;padding:10px 30px;border-radius:999px;background:#e0a526;color:#1b120c;border:4px solid #1b120c;box-shadow:4px 4px 0 #1b120c;animation:nudge 1.8s ease-in-out infinite}
+body.aboard .intro{opacity:0;pointer-events:none}
+body.aboard .spyglass-ring{transform:translate(-50%,-50%) scale(6);opacity:0}
+.intro-copy{position:absolute;top:auto}
+/* place the title above the lens */
+.intro .intro-copy{bottom:auto;top:calc(50% + 25vmin)}
+
+/* ===== Panel ===== */
+.panel{position:fixed;inset:0;z-index:30;pointer-events:none}
+.backdrop{position:absolute;inset:0;background:rgba(3,8,18,.55);backdrop-filter:blur(3px);opacity:0;transition:opacity .35s}
+.sheet{position:absolute;left:50%;top:50%;width:min(920px,94vw);max-height:88vh;overflow:auto;
+  transform:translate(-50%,-40%) scale(.92) rotate(-1deg);opacity:0;transition:.45s cubic-bezier(.3,1.4,.5,1);
+  background:linear-gradient(180deg,#14304d,#0b2236);border:4px solid #a97b45;border-radius:18px;
+  box-shadow:0 0 0 4px #1b120c,0 30px 80px rgba(0,0,0,.6)}
+.panel.open{pointer-events:auto}
+.panel.open .backdrop{opacity:1}
+.panel.open .sheet{opacity:1;transform:translate(-50%,-50%) scale(1) rotate(0)}
+.sheet-head{position:sticky;top:0;z-index:3;display:flex;justify-content:space-between;align-items:center;padding:14px 22px;
+  background:linear-gradient(180deg,#0b2236,rgba(11,34,54,.92));border-bottom:3px double #a97b45}
+.sheet-head h2{margin:0}
+.sheet main{padding:10px 24px 20px}
+.credit{text-align:center;color:#cfe8f3;opacity:.55;font-size:.78rem;margin:0 0 16px}
+.sr-nav{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+
+/* mobile: keep the crew readable */
+@media (max-width:720px){
+  .stage{width:max(100vw,130vh);height:max(76.9vw,100vh)}
+  .hint-pill{display:none}
+  .bubble{font-size:12px;max-width:170px}
+  .name{font-size:14px}
+  .dock button{font-size:15px;padding:5px 10px}
+}
+@media(prefers-reduced-motion:reduce){body:not(.aboard) .stage{transform:none;clip-path:none}}

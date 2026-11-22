@@ -3,107 +3,329 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>SAA Study Tracker</title>
+<title>SAA Study Tracker · Set sail for the SAA-C03</title>
 <link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/scene.css">
 </head>
 <body>
-<header class="top">
-  <div>
-    <h1>SAA Study Tracker</h1>
-    <p class="sub">Prep for AWS Certified Solutions Architect – Associate (SAA-C03)</p>
+
+<!-- ===== Night sky (stars drawn by app.js) ===== -->
+<div class="sky" id="sky" aria-hidden="true"></div>
+
+<!-- ===== The ship scene ===== -->
+<div id="scene" class="scene">
+  <div class="stage">
+    <svg class="world" viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+      <defs>
+        <radialGradient id="lampGlow"><stop offset="0" stop-color="#ffd56b" stop-opacity=".95"/><stop offset=".35" stop-color="#ffb63b" stop-opacity=".45"/><stop offset="1" stop-color="#ffb63b" stop-opacity="0"/></radialGradient>
+        <radialGradient id="moonGlow"><stop offset="0" stop-color="#fff6d8" stop-opacity=".7"/><stop offset="1" stop-color="#fff6d8" stop-opacity="0"/></radialGradient>
+        <linearGradient id="seaGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0" class="sea-top"/><stop offset="1" class="sea-bot"/></linearGradient>
+        <pattern id="planks" width="120" height="40" patternUnits="userSpaceOnUse">
+          <rect width="120" height="40" class="plank"/><path d="M0 40 H120 M60 0 V20 M0 20 H120 M20 20 V40 M100 20 V40" stroke="#1b120c" stroke-width="3" opacity=".55"/>
+        </pattern>
+      </defs>
+
+      <!-- moon / sun -->
+      <g class="layer far">
+        <circle cx="1330" cy="150" r="170" fill="url(#moonGlow)" class="moonglow"/>
+        <g class="moon"><circle cx="1330" cy="150" r="62" fill="#fff3cc" stroke="#1b120c" stroke-width="6"/>
+          <circle cx="1305" cy="135" r="12" fill="#ecd9a0"/><circle cx="1352" cy="172" r="8" fill="#ecd9a0"/><circle cx="1350" cy="125" r="6" fill="#ecd9a0"/></g>
+        <g class="sun"><circle cx="1330" cy="150" r="66" fill="#ffd24a" stroke="#1b120c" stroke-width="6"/></g>
+        <!-- distant island with a lighthouse -->
+        <path d="M60 560 Q160 470 280 520 Q360 480 430 560Z" class="island" stroke="#1b120c" stroke-width="6" stroke-linejoin="round"/>
+        <rect x="300" y="440" width="22" height="80" fill="#f4f1e8" stroke="#1b120c" stroke-width="5"/>
+        <path d="M296 440 L311 418 L326 440Z" fill="#b23a2e" stroke="#1b120c" stroke-width="5" stroke-linejoin="round"/>
+        <path class="beam" d="M311 432 L-40 380 L-40 480Z" fill="#fff2a8" opacity=".25"/>
+        <!-- clouds -->
+        <g class="cloud c1"><path d="M200 170 q30 -40 70 -10 q30 -30 60 5 q40 0 30 30 h-170 q-20 -20 10 -25z" class="cloudfill" stroke="#1b120c" stroke-width="5" stroke-linejoin="round"/></g>
+        <g class="cloud c2"><path d="M820 110 q30 -36 66 -8 q26 -26 54 4 q36 0 28 26 h-158 q-18 -18 10 -22z" class="cloudfill" stroke="#1b120c" stroke-width="5" stroke-linejoin="round"/></g>
+      </g>
+
+      <!-- far sea -->
+      <g class="layer mid">
+        <rect x="-100" y="540" width="1800" height="400" fill="url(#seaGrad)"/>
+        <g class="swell s1"><path d="M-200 590 q50 -16 100 0 t100 0 t100 0 t100 0 t100 0 t100 0 t100 0 t100 0 t100 0 t100 0 t100 0 t100 0 t100 0 t100 0 t100 0 t100 0 t100 0 t100 0 t100 0 t100 0 t100 0" fill="none" stroke="#cfe8f3" stroke-width="4" opacity=".35" stroke-linecap="round"/></g>
+        <g class="swell s2"><path d="M-200 630 q60 -18 120 0 t120 0 t120 0 t120 0 t120 0 t120 0 t120 0 t120 0 t120 0 t120 0 t120 0 t120 0 t120 0 t120 0 t120 0 t120 0" fill="none" stroke="#cfe8f3" stroke-width="4" opacity=".25" stroke-linecap="round"/></g>
+      </g>
+
+      <!-- ===== Ship ===== -->
+      <g class="layer near ship-rock">
+        <!-- mast & sails -->
+        <rect x="785" y="18" width="30" height="662" fill="#7a4b22" stroke="#1b120c" stroke-width="6"/>
+        <rect x="700" y="110" width="200" height="16" rx="6" fill="#7a4b22" stroke="#1b120c" stroke-width="5"/>
+        <path class="sail" d="M705 126 Q800 150 895 126 Q925 300 895 430 Q800 455 705 430 Q675 300 705 126Z" fill="#f6ecd2" stroke="#1b120c" stroke-width="6" stroke-linejoin="round">
+          <animate attributeName="d" dur="5s" repeatCount="indefinite" values="M705 126 Q800 150 895 126 Q925 300 895 430 Q800 455 705 430 Q675 300 705 126Z;M705 126 Q800 150 895 126 Q945 300 895 430 Q800 470 705 430 Q695 300 705 126Z;M705 126 Q800 150 895 126 Q925 300 895 430 Q800 455 705 430 Q675 300 705 126Z"/>
+        </path>
+        <!-- sail emblem: compass star, original -->
+        <g transform="translate(800 285)"><circle r="58" fill="none" stroke="#4b2e83" stroke-width="7"/>
+          <path d="M0 -48 L10 -10 L48 0 L10 10 L0 48 L-10 10 L-48 0 L-10 -10Z" fill="#4b2e83" stroke="#1b120c" stroke-width="4" stroke-linejoin="round"/>
+          <circle r="9" fill="#e8c45c" stroke="#1b120c" stroke-width="3"/></g>
+        <!-- flag: black pirate flag with Captain Khalil's skull (curly hair, mustache, goatee, cheek scar) over crossed lightning bolts -->
+        <g class="flag">
+          <circle cx="800" cy="16" r="9" fill="#e0a526" stroke="#1b120c" stroke-width="5"/>
+          <path fill="#141414" stroke="#1b120c" stroke-width="5" stroke-linejoin="round" d="M815 24 Q860 16 900 26 T985 24 Q980 64 988 104 Q945 94 900 106 T815 104Z">
+            <animate attributeName="d" dur="2.2s" repeatCount="indefinite" values="M815 24 Q860 16 900 26 T985 24 Q980 64 988 104 Q945 94 900 106 T815 104Z;M815 24 Q860 32 900 22 T990 30 Q996 70 984 110 Q945 116 900 100 T815 104Z;M815 24 Q860 16 900 26 T985 24 Q980 64 988 104 Q945 94 900 106 T815 104Z"/>
+          </path>
+          <g transform="translate(898 66)">
+            <animateTransform attributeName="transform" type="translate" dur="2.2s" repeatCount="indefinite" values="898 66;902 68;898 66"/>
+            <g transform="scale(1.15)">
+            <g fill="#f4f1e8" stroke="#141414" stroke-width="2" stroke-linejoin="round">
+              <!-- crossed lightning bolts -->
+              <path d="M-7 -46 L9 -46 L2 -8 L13 -8 L-8 46 L-2 6 L-13 6 Z" transform="rotate(-48)"/>
+              <path d="M-7 -46 L9 -46 L2 -8 L13 -8 L-8 46 L-2 6 L-13 6 Z" transform="rotate(48) scale(-1 1)"/>
+              <!-- gel curls on top -->
+              <circle cx="-14" cy="-22" r="7"/><circle cx="-5" cy="-27" r="7"/><circle cx="5" cy="-27" r="7"/><circle cx="14" cy="-22" r="7"/><circle cx="-19" cy="-13" r="6"/><circle cx="19" cy="-13" r="6"/>
+              <!-- skull -->
+              <circle cx="0" cy="-6" r="18"/>
+              <rect x="-11" y="6" width="22" height="13" rx="4"/>
+              <!-- goatee -->
+              <path d="M-5 18 L5 18 L0 28Z"/>
+            </g>
+            <g fill="#141414">
+              <ellipse cx="-7" cy="-6" rx="5" ry="6"/><ellipse cx="7" cy="-6" rx="5" ry="6"/>
+              <path d="M0 0 L-3 5 L3 5Z"/>
+              <path d="M-10 9 Q-5 4 0 7 Q5 4 10 9 Q5 7 0 9 Q-5 7 -10 9Z"/>
+              <path d="M-5 12 V18 M0 12 V18 M5 12 V18" stroke="#141414" stroke-width="1.6"/>
+              <path d="M11 -2 L16 4" stroke="#141414" stroke-width="2"/>
+            </g>
+            </g>
+          </g>
+        </g>
+        <!-- rigging -->
+        <path d="M800 70 L170 640 M800 70 L1450 640" stroke="#1b120c" stroke-width="4" opacity=".7"/>
+        <path d="M800 140 L250 640 M800 140 L1370 640" stroke="#1b120c" stroke-width="3" opacity=".45"/>
+
+        <!-- deck -->
+        <path d="M90 640 H1510 L1480 700 H120Z" fill="url(#planks)" stroke="#1b120c" stroke-width="6" stroke-linejoin="round"/>
+        <!-- railing -->
+        <path d="M110 600 H1490" stroke="#1b120c" stroke-width="10" stroke-linecap="round"/>
+        <path d="M110 600 H1490" stroke="#a97b45" stroke-width="5" stroke-linecap="round"/>
+        <g stroke="#1b120c" stroke-width="5"><path d="M150 600 V640 M250 600 V640 M350 600 V640 M450 600 V640 M1150 600 V640 M1250 600 V640 M1350 600 V640 M1450 600 V640"/></g>
+
+        <!-- cannon (left) -->
+        <g class="cannon"><rect x="150" y="575" width="150" height="46" rx="22" fill="#2b2f36" stroke="#1b120c" stroke-width="6"/>
+          <circle cx="160" cy="598" r="18" fill="#14171b" stroke="#1b120c" stroke-width="5"/>
+          <circle cx="250" cy="630" r="22" fill="#7a4b22" stroke="#1b120c" stroke-width="6"/><circle cx="250" cy="630" r="6" fill="#1b120c"/>
+          <g class="cannonballs"><circle cx="330" cy="632" r="11" fill="#2b2f36" stroke="#1b120c" stroke-width="4"/><circle cx="352" cy="632" r="11" fill="#2b2f36" stroke="#1b120c" stroke-width="4"/><circle cx="341" cy="614" r="11" fill="#2b2f36" stroke="#1b120c" stroke-width="4"/></g></g>
+
+        <!-- crate of flashcards -->
+        <g class="crate"><rect x="470" y="560" width="120" height="82" fill="#b27a3e" stroke="#1b120c" stroke-width="6"/>
+          <path d="M470 560 L590 642 M590 560 L470 642" stroke="#1b120c" stroke-width="4" opacity=".6"/>
+          <g class="cards"><rect x="490" y="534" width="46" height="34" rx="4" fill="#f6ecd2" stroke="#1b120c" stroke-width="4" transform="rotate(-10 513 551)"/>
+          <rect x="522" y="528" width="46" height="34" rx="4" fill="#fff8e6" stroke="#1b120c" stroke-width="4" transform="rotate(8 545 545)"/></g></g>
+
+        <!-- cargo hatch (center) -->
+        <g class="hatch"><rect x="690" y="648" width="220" height="44" rx="6" fill="#5a3618" stroke="#1b120c" stroke-width="6"/>
+          <path d="M690 670 H910 M745 648 V692 M800 648 V692 M855 648 V692" stroke="#1b120c" stroke-width="4"/>
+          <circle cx="800" cy="670" r="8" fill="#e0a526" stroke="#1b120c" stroke-width="3"/></g>
+
+        <!-- galley: barrel table, pot and steam -->
+        <g class="galley"><rect x="935" y="580" width="110" height="62" rx="12" fill="#8a5a2b" stroke="#1b120c" stroke-width="6"/>
+          <path d="M935 600 H1045 M935 622 H1045" stroke="#1b120c" stroke-width="4"/>
+          <path d="M950 550 H1030 L1022 580 H958Z" fill="#3a3f47" stroke="#1b120c" stroke-width="6" stroke-linejoin="round"/>
+          <g class="steam"><path d="M970 540 q-10 -20 0 -40 q10 -20 0 -40" stroke="#f4f1e8" stroke-width="5" fill="none" stroke-linecap="round"/>
+          <path d="M1005 540 q-10 -20 0 -40 q10 -20 0 -40" stroke="#f4f1e8" stroke-width="5" fill="none" stroke-linecap="round"/></g>
+          <!-- open logbook -->
+          <path d="M1060 612 l40 -10 l40 10 v28 l-40 -10 l-40 10z" fill="#f6ecd2" stroke="#1b120c" stroke-width="5" stroke-linejoin="round"/></g>
+
+        <!-- helm wheel (right) -->
+        <g class="wheel" transform="translate(1340 560)"><g class="spin">
+          <circle r="62" fill="none" stroke="#7a4b22" stroke-width="16"/><circle r="62" fill="none" stroke="#1b120c" stroke-width="4"/>
+          <circle r="16" fill="#7a4b22" stroke="#1b120c" stroke-width="5"/>
+          <g stroke="#1b120c" stroke-width="6" stroke-linecap="round"><path d="M0 -84 V84 M-84 0 H84 M-59 -59 L59 59 M59 -59 L-59 59"/></g></g>
+          <rect x="-14" y="40" width="28" height="44" fill="#7a4b22" stroke="#1b120c" stroke-width="6"/></g>
+
+        <!-- lanterns -->
+        <g class="lantern l1" transform="translate(800 470)"><circle r="120" fill="url(#lampGlow)" class="glow"/>
+          <path d="M-6 -40 V-24" stroke="#1b120c" stroke-width="5"/><rect x="-18" y="-24" width="36" height="44" rx="6" fill="#ffd56b" stroke="#1b120c" stroke-width="6"/><path d="M-22 -24 H22 M-22 20 H22" stroke="#1b120c" stroke-width="6" stroke-linecap="round"/></g>
+        <g class="lantern l2" transform="translate(1490 560)"><circle r="110" fill="url(#lampGlow)" class="glow"/>
+          <rect x="-16" y="-22" width="32" height="40" rx="6" fill="#ffd56b" stroke="#1b120c" stroke-width="6"/></g>
+        <g class="lantern l3" transform="translate(110 560)"><circle r="110" fill="url(#lampGlow)" class="glow"/>
+          <rect x="-16" y="-22" width="32" height="40" rx="6" fill="#ffd56b" stroke="#1b120c" stroke-width="6"/></g>
+
+        <!-- hull -->
+        <path d="M60 690 H1540 Q1500 860 1300 880 H300 Q100 860 60 690Z" fill="#6b3f1d" stroke="#1b120c" stroke-width="8" stroke-linejoin="round"/>
+        <path d="M80 730 H1520 M110 790 H1490" stroke="#1b120c" stroke-width="5" opacity=".5"/>
+        <path d="M70 712 H1530" stroke="#e0a526" stroke-width="8"/>
+        <g fill="#2a1a10" stroke="#1b120c" stroke-width="5"><circle cx="300" cy="760" r="16"/><circle cx="560" cy="760" r="16"/><circle cx="1040" cy="760" r="16"/><circle cx="1300" cy="760" r="16"/></g>
+        <text x="800" y="800" text-anchor="middle" class="shipname">THE CLOUD CHASER</text>
+      </g>
+
+      <!-- near waves over the hull -->
+      <g class="layer front">
+        <g class="wave-front wf1"><path d="M-300 850 q60 -30 120 0 t120 0 t120 0 t120 0 t120 0 t120 0 t120 0 t120 0 t120 0 t120 0 t120 0 t120 0 t120 0 t120 0 t120 0 t120 0 t120 0 t120 0 V950 H-300Z" class="wavefill1" stroke="#1b120c" stroke-width="6" stroke-linejoin="round"/></g>
+        <g class="wave-front wf2"><path d="M-300 880 q75 -28 150 0 t150 0 t150 0 t150 0 t150 0 t150 0 t150 0 t150 0 t150 0 t150 0 t150 0 t150 0 t150 0 t150 0 V950 H-300Z" class="wavefill2" stroke="#1b120c" stroke-width="6" stroke-linejoin="round"/></g>
+      </g>
+    </svg>
+
+    <!-- ===== Crew (pixel sprites) & clickable spots ===== -->
+    <div class="crew ship-rock">
+      <div class="hot mate" style="left:24%;top:52%;height:18.5%" data-open="quiz" data-title="Sparks' Practice Quiz" tabindex="0" role="button" aria-label="Sparks the gunner: practice quiz">
+        <canvas class="sprite" data-sprite="sparks"></canvas>
+        <span class="bubble">Ten questions. Hit 'em and we fire gold!</span><span class="name">Sparks · Quiz</span>
+      </div>
+      <div class="hot mate" style="left:41.5%;top:52%;height:18.5%" data-open="flashcards" data-title="Rook's Flashcard Crate" tabindex="0" role="button" aria-label="Rook the quartermaster: flashcards">
+        <canvas class="sprite" data-sprite="rook"></canvas>
+        <span class="bubble">Cards in the crate, Captain. Flip 'em!</span><span class="name">Rook · Flashcards</span>
+      </div>
+      <div class="hot mate" style="left:55.5%;top:51%;height:19.5%" data-open="notes" data-title="Pepper's Galley Logbook" tabindex="0" role="button" aria-label="Pepper the cook: captain's notes">
+        <canvas class="sprite" data-sprite="pepper"></canvas>
+        <span class="bubble">Write it down while the stew's hot.</span><span class="name">Pepper · Notes</span>
+      </div>
+      <div class="hot mate captain" style="left:74.5%;top:48.3%;height:22.2%" data-open="dashboard" data-title="Captain's Voyage" tabindex="0" role="button" aria-label="Captain Khalil at the helm: voyage dashboard">
+        <canvas class="sprite" data-sprite="captain"></canvas>
+        <span class="bubble">Steady at the helm. How close are we to exam day?</span><span class="name">Capt. Khalil · Voyage</span>
+      </div>
+      <div class="hot thing" style="left:43%;top:71.5%;width:14%;height:6%" data-open="settings" data-title="Cargo Hold" tabindex="0" role="button" aria-label="Cargo hatch: back up or load progress">
+        <span class="bubble">Cargo hold: back up or load your progress</span><span class="name">Cargo</span>
+      </div>
+    </div>
   </div>
-  <nav>
-    <button data-view="dashboard" class="active">Dashboard</button>
-    <button data-view="flashcards">Flashcards</button>
-    <button data-view="quiz">Practice quiz</button>
-    <button data-view="notes">Notes</button>
-    <button data-view="settings">Data</button>
-  </nav>
+</div>
+
+<!-- ===== HUD ===== -->
+<header class="hud">
+  <div class="logo"><span>SAA</span> Study Tracker</div>
+  <div class="hud-right">
+    <span class="hint-pill">Click the crew to study</span>
+    <button id="dayNight" class="icon" aria-label="Switch to day">☀</button>
+    <button id="soundBtn" class="icon" aria-label="Sound on">🔈</button>
+  </div>
 </header>
+<div class="dock" role="toolbar" aria-label="Crew roster">
+  <button data-open="dashboard" data-title="Captain's Voyage">⚓ Voyage</button>
+  <button data-open="flashcards" data-title="Rook's Flashcard Crate">🃏 Flashcards</button>
+  <button data-open="quiz" data-title="Sparks' Practice Quiz">💥 Quiz</button>
+  <button data-open="notes" data-title="Pepper's Galley Logbook">📖 Notes</button>
+  <button data-open="settings" data-title="Cargo Hold">📦 Cargo</button>
+</div>
 
-<main>
-  <!-- Dashboard -->
-  <section id="view-dashboard" class="view active">
-    <div class="stats">
-      <div class="stat"><span class="label">Weighted readiness</span><span id="readiness" class="big">0%</span></div>
-      <div class="stat"><span class="label">Days to exam</span><span id="countdown" class="big">–</span></div>
-      <div class="stat"><span class="label">Study streak</span><span id="streak" class="big">0</span></div>
-      <div class="stat"><span class="label">Cards mastered</span><span id="mastered" class="big">0</span></div>
-    </div>
-    <h2>Exam readiness by domain</h2>
-    <p class="hint">Slide each domain to how ready you feel. Your quiz accuracy is shown next to it so you can check your gut against your results.</p>
-    <div id="domains"></div>
-    <h2>Exam date</h2>
-    <input type="date" id="examDate">
-    <h2>Recent sessions</h2>
-    <ul id="sessions" class="sessions"></ul>
-  </section>
+<!-- ===== Intro: spyglass ===== -->
+<div id="intro" class="intro">
+  <div class="spyglass-ring" aria-hidden="true"></div>
+  <div class="intro-copy">
+    <p class="kicker">A study voyage for the AWS Solutions Architect – Associate</p>
+    <h1>SAA Study Tracker</h1>
+    <button id="setSail" class="setsail">Set sail ↓</button>
+    <p class="kicker small">scroll, tap, or press Enter</p>
+  </div>
+</div>
 
-  <!-- Flashcards -->
-  <section id="view-flashcards" class="view">
-    <div class="row">
-      <label>Domain <select id="fcDomain"></select></label>
-      <span id="fcDue" class="hint"></span>
-    </div>
-    <div class="card" id="fcCard">
-      <div class="tag" id="fcTag"></div>
-      <p id="fcQ" class="q"></p>
-      <p id="fcA" class="a hidden"></p>
-    </div>
-    <div class="row">
-      <button id="fcShow">Show answer</button>
-      <button id="fcAgain" class="hidden bad">Missed it</button>
-      <button id="fcGood" class="hidden good">Got it</button>
-    </div>
-    <details class="add">
-      <summary>Add your own card</summary>
-      <select id="newDomain"></select>
-      <input id="newQ" placeholder="Question">
-      <textarea id="newA" placeholder="Answer"></textarea>
-      <button id="addCard">Add card</button>
-    </details>
-  </section>
+<!-- ===== Parchment panel holding the app views ===== -->
+<div id="panel" class="panel" aria-live="polite">
+  <div id="panelBackdrop" class="backdrop"></div>
+  <div class="sheet" role="dialog" aria-labelledby="panelTitle">
+    <div class="sheet-head"><h2 id="panelTitle">Voyage</h2><button id="panelClose" class="icon" aria-label="Close">✕</button></div>
 
-  <!-- Quiz -->
-  <section id="view-quiz" class="view">
-    <div id="quizStart">
-      <p>Ten multiple-choice questions pulled from the card deck, weighted toward your weakest domains.</p>
-      <button id="startQuiz">Start quiz</button>
-    </div>
-    <div id="quizBody" class="hidden">
-      <p id="quizProgress" class="hint"></p>
-      <div class="card"><div class="tag" id="quizTag"></div><p id="quizQ" class="q"></p></div>
-      <div id="quizChoices" class="choices"></div>
-      <p id="quizFeedback"></p>
-      <button id="quizNext" class="hidden">Next</button>
-    </div>
-    <div id="quizDone" class="hidden">
-      <h2 id="quizScore"></h2>
-      <button id="quizAgain">Take another</button>
-    </div>
-  </section>
+    <!-- hidden view switcher used by app.js -->
+    <nav class="sr-nav">
+      <button data-view="dashboard" class="active">Voyage</button>
+      <button data-view="flashcards">Flashcards</button>
+      <button data-view="quiz">Practice Quiz</button>
+      <button data-view="notes">Captain's Notes</button>
+      <button data-view="settings">Cargo</button>
+    </nav>
 
-  <!-- Notes -->
-  <section id="view-notes" class="view">
-    <label>Domain <select id="noteDomain"></select></label>
-    <textarea id="noteText" class="notes" placeholder="Write study notes for this domain..."></textarea>
-    <p class="hint">Notes save automatically in this browser.</p>
-  </section>
+    <main>
+      <section id="view-dashboard" class="view active">
+        <div class="stats">
+          <div class="stat"><span class="label">Weighted readiness</span><span id="readiness" class="big">0%</span></div>
+          <div class="stat"><span class="label">Days to exam</span><span id="countdown" class="big">–</span></div>
+          <div class="stat"><span class="label">Study streak</span><span id="streak" class="big">0</span></div>
+          <div class="stat"><span class="label">Cards mastered</span><span id="mastered" class="big">0</span></div>
+        </div>
+        <div class="voyage">
+          <div class="title">Your voyage to exam day: the ship sails as your readiness grows</div>
+          <div class="track">
+            <div class="route"></div>
+            <span class="port" title="Start">⚓</span>
+            <div class="ship" id="ship">
+              <svg viewBox="0 0 64 56" aria-hidden="true">
+                <path d="M31 4 V40" stroke="#3b2614" stroke-width="2.5"/>
+                <path d="M33 6 Q52 20 33 36Z" fill="#fff8e6" stroke="#6b4a2b" stroke-width="1.5"/>
+                <path d="M29 10 Q14 22 29 36Z" fill="#f1e2bf" stroke="#6b4a2b" stroke-width="1.5"/>
+                <path d="M31 4 L42 7 L31 10Z" fill="#4b2e83"/>
+                <path d="M6 40 H58 L50 52 H14Z" fill="#7a4b22" stroke="#3b2614" stroke-width="2"/>
+                <path d="M10 44 H54" stroke="#e0a526" stroke-width="1.5"/>
+              </svg>
+            </div>
+            <span class="treasure" title="Exam ready">💰</span>
+          </div>
+        </div>
+        <h2>Exam readiness by domain</h2>
+        <p class="hint">Slide each domain to how ready you feel. Your quiz accuracy is shown next to it so you can check your gut against your results.</p>
+        <div id="domains" class="domain-wrap"></div>
+        <h2>Exam date</h2>
+        <input type="date" id="examDate">
+        <h2>Captain's log</h2>
+        <div class="log"><ul id="sessions" class="sessions"></ul></div>
+      </section>
 
-  <!-- Data -->
-  <section id="view-settings" class="view">
-    <h2>Back up or move your progress</h2>
-    <p class="hint">Everything is stored in this browser. Export a file to back it up or move it to another device.</p>
-    <div class="row">
-      <button id="exportBtn">Export progress</button>
-      <label class="file">Import progress <input type="file" id="importFile" accept="application/json"></label>
-      <button id="resetBtn" class="bad">Reset everything</button>
-    </div>
-  </section>
-</main>
+      <section id="view-flashcards" class="view">
+        <div class="row">
+          <label>Domain <select id="fcDomain"></select></label>
+          <span id="fcDue" class="hint"></span>
+        </div>
+        <div class="flip" id="fcFlip">
+          <div class="inner">
+            <div class="face front card"><div class="tag" id="fcTag"></div><p id="fcQ" class="q"></p></div>
+            <div class="face back card"><div class="tag">Answer</div><p id="fcA" class="a"></p></div>
+          </div>
+        </div>
+        <div class="row">
+          <button id="fcShow">Show answer</button>
+          <button id="fcAgain" class="hidden bad">Missed it</button>
+          <button id="fcGood" class="hidden good">Got it</button>
+        </div>
+        <details class="add">
+          <summary>Add your own card</summary>
+          <select id="newDomain"></select>
+          <input id="newQ" placeholder="Question">
+          <textarea id="newA" placeholder="Answer"></textarea>
+          <button id="addCard">Add card</button>
+        </details>
+      </section>
 
-<footer>Built by Khalil Ahmednoor for TCSS 490 Artifact 5. Not affiliated with AWS.</footer>
+      <section id="view-quiz" class="view">
+        <div id="quizStart">
+          <p class="hint">Ten multiple-choice questions pulled from the deck, weighted toward your weakest waters. Every right answer earns you gold.</p>
+          <button id="startQuiz">Start quiz</button>
+        </div>
+        <div id="quizBody" class="hidden">
+          <p id="quizProgress" class="hint"></p>
+          <div class="card"><div class="tag" id="quizTag"></div><p id="quizQ" class="q"></p></div>
+          <div id="quizChoices" class="choices"></div>
+          <p id="quizFeedback"></p>
+          <button id="quizNext" class="hidden">Next</button>
+        </div>
+        <div id="quizDone" class="hidden">
+          <h2 id="quizScore"></h2>
+          <button id="quizAgain">Take another</button>
+        </div>
+      </section>
+
+      <section id="view-notes" class="view">
+        <label>Domain <select id="noteDomain"></select></label>
+        <textarea id="noteText" class="notes" placeholder="Write study notes for this domain..."></textarea>
+        <p class="hint">Notes save automatically in this browser.</p>
+      </section>
+
+      <section id="view-settings" class="view">
+        <h2>Stow or load your cargo</h2>
+        <p class="hint">Everything is stored in this browser. Export a file to back it up or move it to another device.</p>
+        <div class="row">
+          <button id="exportBtn">Export progress</button>
+          <label class="file">Import progress <input type="file" id="importFile" accept="application/json"></label>
+          <button id="resetBtn" class="bad">Reset everything</button>
+        </div>
+      </section>
+    </main>
+    <p class="credit">Built by Khalil Ahmednoor for TCSS 490 Artifact 5. Not affiliated with AWS.</p>
+  </div>
+</div>
+
 <script src="js/storage.js"></script>
 <script src="js/app.js"></script>
+<script src="js/scene.js"></script>
 </body>
 </html>

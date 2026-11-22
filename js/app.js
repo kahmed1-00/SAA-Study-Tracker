@@ -79,11 +79,20 @@ function renderDashboard() {
   updateStats();
 }
 
+function setStat(id, text) {
+  const el = $(id);
+  if (el.textContent !== String(text)) {
+    el.textContent = text;
+    el.classList.remove("pop"); void el.offsetWidth; el.classList.add("pop");
+  }
+}
+
 function updateStats() {
   const weighted = DOMAINS.reduce((sum, d) => sum + state.readiness[d.id] * d.weight, 0);
-  $("readiness").textContent = Math.round(weighted) + "%";
+  setStat("readiness", Math.round(weighted) + "%");
+  $("ship").style.left = "calc(" + Math.round(weighted) + "% - " + Math.round(weighted * 0.54) + "px)";
   $("streak").textContent = streak() + (streak() === 1 ? " day" : " days");
-  $("mastered").textContent = Object.values(state.progress).filter((p) => p.box >= 4).length + " / " + allCards().length;
+  setStat("mastered", Object.values(state.progress).filter((p) => p.box >= 4).length + " / " + allCards().length);
   if (state.examDate) {
     const days = Math.ceil((new Date(state.examDate + "T00:00") - new Date()) / DAY);
     $("countdown").textContent = days >= 0 ? days : "passed";
@@ -111,7 +120,8 @@ function dueCards() {
 function nextCard() {
   const due = dueCards();
   $("fcDue").textContent = due.length + " card" + (due.length === 1 ? "" : "s") + " due";
-  $("fcA").classList.add("hidden");
+  $("fcFlip").classList.remove("flipped");
+  $("fcFlip").classList.remove("deal"); void $("fcFlip").offsetWidth; $("fcFlip").classList.add("deal");
   $("fcAgain").classList.add("hidden");
   $("fcGood").classList.add("hidden");
   if (!due.length) {
@@ -126,7 +136,7 @@ function nextCard() {
   currentCard = due[0];
   $("fcTag").textContent = domainName(currentCard.domain);
   $("fcQ").textContent = currentCard.q;
-  $("fcA").textContent = currentCard.a;
+  setTimeout(() => { if (currentCard) $("fcA").textContent = currentCard.a; }, 350);
   $("fcShow").classList.remove("hidden");
 }
 
@@ -140,13 +150,17 @@ function grade(correct) {
 }
 
 $("fcShow").addEventListener("click", () => {
-  $("fcA").classList.remove("hidden");
+  $("fcFlip").classList.add("flipped");
   $("fcShow").classList.add("hidden");
   $("fcAgain").classList.remove("hidden");
   $("fcGood").classList.remove("hidden");
 });
 $("fcAgain").addEventListener("click", () => grade(false));
-$("fcGood").addEventListener("click", () => grade(true));
+$("fcGood").addEventListener("click", () => {
+  $("fcFlip").classList.add("win");
+  celebrate($("fcFlip"));
+  setTimeout(() => { $("fcFlip").classList.remove("win"); grade(true); }, 650);
+});
 $("fcDomain").addEventListener("change", nextCard);
 
 $("addCard").addEventListener("click", () => {
@@ -209,16 +223,59 @@ function showQuestion() {
   });
 }
 
+function coinBurst(el) {
+  const r = el.getBoundingClientRect();
+  for (let i = 0; i < 7; i++) {
+    const c = document.createElement("span");
+    c.className = "coin";
+    c.textContent = "🪙";
+    c.style.left = r.left + r.width / 2 + "px";
+    c.style.top = r.top + "px";
+    c.style.setProperty("--dx", (Math.random() * 160 - 80) + "px");
+    c.style.animationDelay = i * 0.05 + "s";
+    document.body.appendChild(c);
+    setTimeout(() => c.remove(), 1400);
+  }
+}
+
+// gold celebration: screen flash, shine sweep, star burst, coins
+function celebrate(el) {
+  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  const r = el.getBoundingClientRect();
+  const x = r.left + r.width / 2, y = r.top + r.height / 2;
+  const f = document.createElement("div");
+  f.className = "flash";
+  f.style.setProperty("--x", x + "px");
+  f.style.setProperty("--y", y + "px");
+  document.body.appendChild(f);
+  setTimeout(() => f.remove(), 800);
+  el.classList.remove("shine"); void el.offsetWidth; el.classList.add("shine");
+  for (let i = 0; i < 16; i++) {
+    const s = document.createElement("span");
+    s.className = "star";
+    const ang = (Math.PI * 2 * i) / 16, dist = 60 + Math.random() * 70;
+    s.style.left = x + "px";
+    s.style.top = y + "px";
+    s.style.setProperty("--dx", Math.cos(ang) * dist + "px");
+    s.style.setProperty("--dy", Math.sin(ang) * dist + "px");
+    s.style.animationDelay = Math.random() * 0.12 + "s";
+    document.body.appendChild(s);
+    setTimeout(() => s.remove(), 1200);
+  }
+  coinBurst(el);
+  if (window.shipSound) window.shipSound.chime(880, 0.3);
+}
+
 function answer(btn, correct) {
   const item = quiz[qi];
   $("quizChoices").querySelectorAll("button").forEach((b) => {
     b.disabled = true;
     if (b.textContent === item.card.a) b.classList.add("right");
   });
-  if (!correct) btn.classList.add("wrong");
+  if (!correct) { btn.classList.add("wrong"); if (window.shipSound) window.shipSound.thud(); }
   const stats = state.quiz[item.card.domain];
   stats.total++;
-  if (correct) { stats.right++; score++; }
+  if (correct) { stats.right++; score++; celebrate(btn); }
   saveState(state);
   $("quizFeedback").textContent = correct ? "Correct." : "Not quite. The right answer is highlighted.";
   $("quizNext").classList.remove("hidden");
@@ -243,6 +300,7 @@ $("quizNext").addEventListener("click", () => {
   $("quizBody").classList.add("hidden");
   $("quizDone").classList.remove("hidden");
   $("quizScore").textContent = `You scored ${score} / ${quiz.length}`;
+  $("quizScore").textContent += score >= 8 ? " · Treasure found!" : score >= 5 ? " · Steady sailing" : " · Rough seas, keep going";
   markStudied(`Practice quiz: ${score}/${quiz.length}`);
 });
 
@@ -290,6 +348,20 @@ $("resetBtn").addEventListener("click", () => {
     $("resetBtn").textContent = "Click again to confirm";
   }
 });
+
+// ---------- Night sky ----------
+(function makeSky() {
+  const sky = $("sky");
+  for (let i = 0; i < 70; i++) {
+    const st = document.createElement("i");
+    st.style.left = Math.random() * 100 + "%";
+    st.style.top = Math.random() * 70 + "%";
+    st.style.setProperty("--t", 2 + Math.random() * 4 + "s");
+    st.style.setProperty("--d", Math.random() * 4 + "s");
+    if (Math.random() < 0.15) { st.style.width = "3px"; st.style.height = "3px"; }
+    sky.appendChild(st);
+  }
+})();
 
 // ---------- Start ----------
 function init() {
