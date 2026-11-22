@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SAA Study Tracker</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<header class="top">
+  <div>
+    <h1>SAA Study Tracker</h1>
+    <p class="sub">Prep for AWS Certified Solutions Architect – Associate (SAA-C03)</p>
+  </div>
+  <nav>
+    <button data-view="dashboard" class="active">Dashboard</button>
+    <button data-view="flashcards">Flashcards</button>
+    <button data-view="quiz">Practice quiz</button>
+    <button data-view="notes">Notes</button>
+    <button data-view="settings">Data</button>
+  </nav>
+</header>
+
+<main>
+  <!-- Dashboard -->
+  <section id="view-dashboard" class="view active">
+    <div class="stats">
+      <div class="stat"><span class="label">Weighted readiness</span><span id="readiness" class="big">0%</span></div>
+      <div class="stat"><span class="label">Days to exam</span><span id="countdown" class="big">–</span></div>
+      <div class="stat"><span class="label">Study streak</span><span id="streak" class="big">0</span></div>
+      <div class="stat"><span class="label">Cards mastered</span><span id="mastered" class="big">0</span></div>
+    </div>
+    <h2>Exam readiness by domain</h2>
+    <p class="hint">Slide each domain to how ready you feel. Your quiz accuracy is shown next to it so you can check your gut against your results.</p>
+    <div id="domains"></div>
+    <h2>Exam date</h2>
+    <input type="date" id="examDate">
+    <h2>Recent sessions</h2>
+    <ul id="sessions" class="sessions"></ul>
+  </section>
+
+  <!-- Flashcards -->
+  <section id="view-flashcards" class="view">
+    <div class="row">
+      <label>Domain <select id="fcDomain"></select></label>
+      <span id="fcDue" class="hint"></span>
+    </div>
+    <div class="card" id="fcCard">
+      <div class="tag" id="fcTag"></div>
+      <p id="fcQ" class="q"></p>
+      <p id="fcA" class="a hidden"></p>
+    </div>
+    <div class="row">
+      <button id="fcShow">Show answer</button>
+      <button id="fcAgain" class="hidden bad">Missed it</button>
+      <button id="fcGood" class="hidden good">Got it</button>
+    </div>
+    <details class="add">
+      <summary>Add your own card</summary>
+      <select id="newDomain"></select>
+      <input id="newQ" placeholder="Question">
+      <textarea id="newA" placeholder="Answer"></textarea>
+      <button id="addCard">Add card</button>
+    </details>
+  </section>
+
+  <!-- Quiz -->
+  <section id="view-quiz" class="view">
+    <div id="quizStart">
+      <p>Ten multiple-choice questions pulled from the card deck, weighted toward your weakest domains.</p>
+      <button id="startQuiz">Start quiz</button>
+    </div>
+    <div id="quizBody" class="hidden">
+      <p id="quizProgress" class="hint"></p>
+      <div class="card"><div class="tag" id="quizTag"></div><p id="quizQ" class="q"></p></div>
+      <div id="quizChoices" class="choices"></div>
+      <p id="quizFeedback"></p>
+      <button id="quizNext" class="hidden">Next</button>
+    </div>
+    <div id="quizDone" class="hidden">
+      <h2 id="quizScore"></h2>
+      <button id="quizAgain">Take another</button>
+    </div>
+  </section>
+
+  <!-- Notes -->
+  <section id="view-notes" class="view">
+    <label>Domain <select id="noteDomain"></select></label>
+    <textarea id="noteText" class="notes" placeholder="Write study notes for this domain..."></textarea>
+    <p class="hint">Notes save automatically in this browser.</p>
+  </section>
+
+  <!-- Data -->
+  <section id="view-settings" class="view">
+    <h2>Back up or move your progress</h2>
+    <p class="hint">Everything is stored in this browser. Export a file to back it up or move it to another device.</p>
+    <div class="row">
+      <button id="exportBtn">Export progress</button>
+      <label class="file">Import progress <input type="file" id="importFile" accept="application/json"></label>
+      <button id="resetBtn" class="bad">Reset everything</button>
+    </div>
+  </section>
+</main>
+
+<footer>Built by Khalil Ahmednoor for TCSS 490 Artifact 5. Not affiliated with AWS.</footer>
+<script src="js/storage.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
